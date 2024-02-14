@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/img">
+        <file alias="background.png">assets/background.png</file>
+        <file alias="gotham.ttf">assets/gotham.ttf</file>
+        <file alias="gothamNarrow.otf">assets/gothamNarrow.otf</file>
+        <file alias="speedLimitCA.png">assets/speedLimitCA.png</file>
+        <file alias="speedLimitEU.png">assets/speedLimitEU.png</file>
+        <file alias="speedLimitUS.png">assets/speedLimitUS.png</file>
+        <file alias="accAvailable.png">assets/accAvailable.png</file>
+        <file alias="accEnabled.png">assets/accEnabled.png</file>
+        <file alias="apAvailable.png">assets/apAvailable.png</file>
+        <file alias="apEnabled.png">assets/apEnabled.png</file>
+        <file alias="spinnerBkg.png">assets/spinnerBkg.png</file>
+        <file alias="spinnerTrack.png">assets/spinnerTrack.png</file>
+    </qresource>
+</RCC>
