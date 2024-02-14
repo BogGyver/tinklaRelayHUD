@@ -310,7 +310,7 @@ void TinklaRelayHUD::setBrightness(int brightness) {
     if (!myTr.rel_car_on) brightness = 0;
     QFile brightnessFile(brightnessControllPath);
     brightnessFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    brightnessFile.write(QString::number(brightness));
+    brightnessFile.write(QString::number(brightness).toUtf8());
     brightnessFile.close();
     previousBrightness = brightness;
 }
