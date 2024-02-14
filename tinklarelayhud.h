@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QTimer>
+#include <QFile>
 #include <array>
 #include "tinklarelaydriver.h"
 
