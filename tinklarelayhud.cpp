@@ -308,7 +308,7 @@ void TinklaRelayHUD::setBrightness(int brightness) {
     if (!brightnessEnabled) return;
     if (brightness == previousBrightness) return;
     if (!myTr.rel_car_on) brightness = 0;
-    QString brighnessCommand = QString("echo %1 > %2").arg(QString::number(brightness),brightnessControllPath);
+    QString brighnessCommand = QString("echo ""%1""" > %2").arg(QString::number(brightness),brightnessControllPath);
     QProcess::execute(brighnessCommand);
     previousBrightness = brightness;
 }
