@@ -14,16 +14,14 @@ TinklaRelayHUD::TinklaRelayHUD(QWidget *parent)
     , ui(new Ui::TinklaRelayHUD)
 {
     ui->setupUi(this);
-    QFont mySpeedFont = QFont(":/img/gotham.ttf",88);
-    QFont myAccFont = QFont(":/img/gothamNarrow.otf",28);
-    QFont mySpeedLimitFont = QFont(":/img/gothamNarrow.otf",24);
+    mySpeedFont = QFont(":/img/gotham.ttf",88);
+    myAccFont = QFont(":/img/gothamNarrow.otf",28);
+    mySpeedLimitFont = QFont(":/img/gothamNarrow.otf",24);
+    mySplashScreenMessageFont = QFont(":/img/gothamNarrow.otf",24);
     accAvailable = QPixmap(":/img/accAvailable.png");
     accEnabled = QPixmap(":/img/accEnabled.png");
-    ui->speedVal->setFont(mySpeedFont);
-    ui->speedLimitValue->setFont(mySpeedLimitFont);
-    ui->accSpeedValue->setFont(myAccFont);
-    int region = 0; //0-US, 1-CA, 2-EU/ROW
-    switch(region) {
+    //0-US, 1-CA, 2-EU/ROW
+    switch(speedSignRegion) {
         case 0:
             ui->speedLimitSign->setPixmap(QPixmap(":/img/speedLimitUS.png"));
             ui->speedLimitValue->setGeometry(ui->speedLimitValue->x(),ui->speedLimitValue->y()-2,
@@ -53,8 +51,6 @@ TinklaRelayHUD::TinklaRelayHUD(QWidget *parent)
     connect(usbCommTimer_, SIGNAL(timeout()), this, SLOT(usbComm()));
     pwr = 0;
     pwr_jmp = 3;
-    flipV = false;
-    flipH = false;
     flipLayout();
 }
 
@@ -96,7 +92,10 @@ void TinklaRelayHUD::setSpeedLimit(uint8_t speed) {
     } else {
         ui->speedLimitSign->setVisible(true);
         ui->speedLimitValue->setVisible(true);
-        ui->speedLimitValue->setText(QString::number(speed));
+        if (speed != oldSpeedLimit) {
+            writeTextToLabel(ui->speedLimitValue,QString::number(speed),mySpeedLimitFont,QColor("white"));
+            oldSpeedLimit = speed;
+        }
     }
 }
 
@@ -113,7 +112,10 @@ void TinklaRelayHUD::setAccLimit(uint8_t status, uint8_t speed) {
         }
         ui->accSpeedSign->setVisible(true);
         ui->accSpeedValue->setVisible(true);
-        ui->accSpeedValue->setText(QString::number(speed));
+        if (speed != oldAccSpeed) {
+            writeTextToLabel(ui->accSpeedValue,QString::number(speed),myAccFont,QColor("white"));
+            oldAccSpeed = speed;
+        }
     }
 }
 
@@ -133,7 +135,8 @@ void TinklaRelayHUD::setApStatus(bool AP_available,bool AP_on) {
     ui->apStatusEnabled->setVisible(AP_on);
 }
 
-void TinklaRelayHUD::drawEnergy(int pwrUsed) {
+void TinklaRelayHUD::drawEnergy(int pwrUsed , int pwrAvailable) {
+    //rescale energy
    int engScaled = 0;
    if (pwrUsed > 0) {
        engScaled = std::min(posScale[0],pwrUsed);
@@ -153,7 +156,9 @@ void TinklaRelayHUD::drawEnergy(int pwrUsed) {
        //rescale like positive
        engScaled = (int)(engScaled * posScale[0] / std::abs(negScale[0]));
    }
+   //compute ccenter angles
    float centerAngleDeg = (90 * engScaled / qrtrVal);
+   float centerAngleDegBatt = (90 * pwrAvailable / qrtrVal);
    int angleSign = 1;
    if (centerAngleDeg != 0) {
        angleSign = (int)(centerAngleDeg/std::abs(centerAngleDeg));
@@ -161,20 +166,27 @@ void TinklaRelayHUD::drawEnergy(int pwrUsed) {
    if (std::abs(centerAngleDeg) <= 2) {
        angleSign = 0;
    }
+   if (centerAngleDegBatt > 2) {
+       centerAngleDegBatt = centerAngleDegBatt - 2 ;
+   }
    centerAngleDeg = centerAngleDeg - 2 * angleSign;
-   //now draw
+   //setup the drawing area
    QPixmap pixmap(ui->energyBar->width(),ui->energyBar->height());
    pixmap.fill(QColor("transparent"));
    QPainter painter(&pixmap);
-
    QRectF rectangle(center_x- engRad, center_y - engRad, 2*engRad, 2*engRad);
+   //now draw
    int startAngle = 0;
+   int startAngleBatt = (int)(180 + 90 * 60/qrtrVal); //60% is at 180 deg
    if (flipH) {
-       startAngle = 180 * 16;
+       startAngle = (180 - startAngle)* 16;
+       startAngleBatt = (180 - startAngleBatt)*16;
    }
    int spanAngle = (centerAngleDeg) * 16;
+   int spanAngleBatt = (-centerAngleDegBatt) * 16;
    if ((flipH != flipV) && (flipH || flipV)) {
        spanAngle = - spanAngle;
+       spanAngleBatt = -spanAngleBatt;
    }
 
    QPen pen;
@@ -186,18 +198,36 @@ void TinklaRelayHUD::drawEnergy(int pwrUsed) {
    }
    painter.setPen(pen);
    painter.drawArc(rectangle, startAngle, spanAngle);
-   //draw marker
+   pen.setBrush(Qt::green);
+   if (pwrAvailable < 20) {
+       pen.setColor("orange");
+   }
+   if (pwrAvailable < 5) {
+       pen.setColor("red");
+   }
+   painter.setPen(pen);
+   painter.drawArc(rectangle, startAngleBatt, spanAngleBatt);
+   //compute power marker
    int x = (int)((engRad -10) * cos((centerAngleDeg + 1 * angleSign)*3.14159/180));
    int y = (int)((engRad -10) * sin((centerAngleDeg + 1 * angleSign)*3.14159/180));
    int lineAngle = centerAngleDeg;
+   int bx = (int)((engRad -10) * cos((180 + 90 * 60/qrtrVal - centerAngleDegBatt - 1)*3.14159/180));
+   int by = (int)((engRad -10) * sin((180 + 90 * 60/qrtrVal - centerAngleDegBatt - 1)*3.14159/180));
+   int lineAngleBatt = (int)(180 + 90 * 60/qrtrVal - centerAngleDegBatt );
+   //flip markers
    if (flipH) {
        x = -x;
+       bx = -bx;
        lineAngle = 90+lineAngle;
+       lineAngleBatt = 90 + lineAngleBatt;
    }
    if (flipV) {
        y = -y;
+       by = - by;
        lineAngle = -lineAngle;
+       lineAngleBatt = - lineAngleBatt;
    }
+   //draw markers
    pen.setColor("white");
    pen.setWidth(4);
    painter.setPen(pen);
@@ -225,7 +255,10 @@ void TinklaRelayHUD::setTurnSignals(bool leftTs, bool rightTs) {
 }
 
 void TinklaRelayHUD::setSpeed(int speed) {
-    ui->speedVal->setText(QString::number(speed));
+    if (speed != oldSpeed) {
+        writeTextToLabel(ui->speedVal,QString::number(speed),mySpeedFont,QColor("white"));
+        oldSpeed = speed;
+    }
 }
 
 void TinklaRelayHUD::setTireAlert(bool tpmsAlert) {
@@ -234,6 +267,24 @@ void TinklaRelayHUD::setTireAlert(bool tpmsAlert) {
 
 void TinklaRelayHUD::setBrakeHold(bool applied) {
     ui->hideBrakeHold->setVisible(!applied);
+}
+
+void TinklaRelayHUD::writeTextToLabel(QLabel *theLabel, QString theString, QFont theFont, QColor theColor) {
+    theLabel->setText("");
+    QPixmap pm(QSize(theLabel->width(),theLabel->height()));
+    pm.fill(QColor("transparent"));
+    QPainter p(&pm);
+    p.setPen(theColor);
+    p.setFont(theFont);
+    p.drawText(QRectF(0, 0, theLabel->width(), theLabel->height()), Qt::AlignVCenter | Qt::AlignHCenter, theString);
+    QTransform tr;
+    if (flipH) {
+        tr.scale(-1,1);
+    }
+    if (flipV) {
+        tr.scale(1,-1);
+    }
+    theLabel->setPixmap(pm.transformed(tr));
 }
 
 void TinklaRelayHUD::drawHud()
@@ -248,7 +299,7 @@ void TinklaRelayHUD::drawHud()
    setTurnSignals(myTr.rel_left_turn_signal,myTr.rel_right_turn_signal);
    setTireAlert(myTr.rel_tpms_alert_on);
    setBrakeHold(myTr.rel_brake_hold_on);
-   drawEnergy(myTr.rel_power_lvl);
+   drawEnergy(myTr.rel_power_lvl,50);
    ui->zzzCarOff->setVisible((!myTr.rel_car_on) && (!tinklaRelaySplashMode) && (!isStarting));
    setBrightness((int)(myTr.rel_brightness * 2.55));
 }
@@ -282,6 +333,7 @@ void TinklaRelayHUD::setSplash(bool isVisible) {
 void TinklaRelayHUD::drawSplash() {
     ui->zSpinnerTrack->setPixmap(spinnerTrackImgs[spinnerTrackPos]);
     ui->zSpinnerText->setText(spinnerText);
+    writeTextToLabel(ui->zSpinnerText,spinnerText,mySplashScreenMessageFont,QColor("white"));
     spinnerTrackPos = (spinnerTrackPos + 1) % numbSpinnerTracks;
     if (spinnerTrackPos == 0) {
         spinnerText = "Searching for Tinkla Relay...";

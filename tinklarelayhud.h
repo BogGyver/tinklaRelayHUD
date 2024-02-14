@@ -8,6 +8,8 @@
 #include <QProcess>
 #include <QTimer>
 #include <QFile>
+#include <QLabel>
+#include <QSettings>
 #include <array>
 #include "tinklarelaydriver.h"
 
@@ -29,6 +31,8 @@ public:
     virtual void setBrightnessControllPath(QString path);
     bool flipV = false;
     bool flipH = false;
+    int speedSignRegion = 0;
+    QSettings *tinklaRelayAppSettings;
 private slots:
     void screenUpdate();
     void drawSplash();
@@ -39,20 +43,25 @@ private:
     QPixmap accAvailable;
     QPixmap apAvailable;
     QPixmap apEnabled;
-    QFont mySpeedFont;
-    QFont myAccFont;
-    QFont mySpeedLimitFont;
+    QFont mySpeedFont = QFont(":/img/gotham.ttf",88);
+    QFont myAccFont = QFont(":/img/gothamNarrow.otf",28);
+    QFont mySpeedLimitFont = QFont(":/img/gothamNarrow.otf",24);
+    QFont mySplashScreenMessageFont = QFont(":/img/gothamNarrow.otf",24);
     QTimer *updateTimer_;
     QTimer *splashTimer_;
     QTimer *usbCommTimer_;
 
     TinklaRelayDriver myTr;
 
+    int oldSpeedLimit = 0;
+    int oldAccSpeed = 0;
+    int oldSpeed = 0;
+
     void setSpeedLimit(uint8_t speed);
     void setAccLimit(uint8_t status, uint8_t speed);
     void setApStatus(bool AP_available, bool AP_on);
     void setGear(bool in_reverse, bool in_forward, bool in_neutral);
-    void drawEnergy(int pwrUsed);
+    void drawEnergy(int pwrUsed, int pwrAvailable);
     void setBlindSpot(bool leftBSM, bool rightBSM);
     void setLights(bool lightsOn, bool highBeamOn);
     void setTurnSignals(bool leftTs, bool rightTs);
@@ -61,6 +70,7 @@ private:
     void setBrakeHold(bool applied);
     void setSplash(bool isVisible);
     void flipLayout();
+    void writeTextToLabel(QLabel *theLabel, QString theString, QFont theFont, QColor theColor);
     const int center_x = 240;
     const int center_y = 200;
     const int engRad = 180;

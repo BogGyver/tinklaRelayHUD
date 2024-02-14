@@ -50,7 +50,6 @@ private:
 
     QString getDescGeneric(quint8 command, int &errcnt, QString &errstr);
     void writeDescGeneric(const QString &descriptor, quint8 command, int &errcnt, QString &errstr);
-
 public:
     // Class definitions
     static const quint16 VID = 0xbbaa;     // Default USB vendor ID
