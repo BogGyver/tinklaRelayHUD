@@ -276,7 +276,7 @@ void TinklaRelayHUD::setSplash(bool isVisible) {
     ui->zSpinnerTrack->setVisible(tinklaRelaySplashMode);
     ui->zSpinnerText->setVisible(tinklaRelaySplashMode);
     ui->zzzCarOff->setVisible((!tinklaRelaySplashMode) && (!isStarting));
-    setBrightness(255);
+    if (isVisible) setBrightness(255);
 }
 
 void TinklaRelayHUD::drawSplash() {
@@ -307,7 +307,7 @@ void TinklaRelayHUD::startSpinnerTimer(int interval) {
 void TinklaRelayHUD::setBrightness(int brightness) {
     if (!brightnessEnabled) return;
     if (brightness == previousBrightness) return;
-    if (!myTr.rel_car_on) brightness = 0;
+    if ((!myTr.rel_car_on) && (!tinklaRelaySplashMode)) brightness = 0;
     QFile brightnessFile(brightnessControllPath);
     brightnessFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
     brightnessFile.write(QString::number(brightness).toUtf8());
