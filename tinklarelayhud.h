@@ -37,6 +37,7 @@ private slots:
     void screenUpdate();
     void drawSplash();
     void usbComm();
+    void openSettings();
 private:
     Ui::TinklaRelayHUD *ui;
     QPixmap accEnabled;

@@ -19,15 +19,18 @@ SOURCES += \
     libusb-extra.c \
     main.cpp \
     tinklarelaydriver.cpp \
-    tinklarelayhud.cpp
+    tinklarelayhud.cpp \
+    tinklarelayhudsettings.cpp
 
 HEADERS += \
     libusb-extra.h \
     tinklarelaydriver.h \
-    tinklarelayhud.h
+    tinklarelayhud.h \
+    tinklarelayhudsettings.h
 
 FORMS += \
-    tinklarelayhud.ui
+    tinklarelayhud.ui \
+    tinklarelayhudsettings.ui
 
 TRANSLATIONS += \
     tinklaRelayHUD_en_US.ts

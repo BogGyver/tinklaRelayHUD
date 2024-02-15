@@ -241,6 +241,7 @@ void TinklaRelayDriver::processDataMessage() {
   rel_speed_limit = 5 * (tinklaRelayData[8] & 0x1F);
   rel_acc_status = (tinklaRelayData[8] >> 5) & 0x03;
   rel_AP_available = ((tinklaRelayData[8] & REL_AP_AVAILABLE) > 0);
+  rel_battery_lvl = tinklaRelayData[9];
 }
 
 // Returns true if a ReadWithRTR command is currently active

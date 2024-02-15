@@ -12,5 +12,12 @@
         <file alias="apEnabled.png">assets/apEnabled.png</file>
         <file alias="spinnerBkg.png">assets/spinnerBkg.png</file>
         <file alias="spinnerTrack.png">assets/spinnerTrack.png</file>
+        <file alias="cancel.png">assets/popup_icons_04_cancel_default.png</file>
+        <file alias="ok.png">assets/checkmark.png</file>
+        <file alias="settings.png">assets/settings.png</file>
+        <file alias="rotationH.png">assets/rotationH.png</file>
+        <file alias="rotationHV.png">assets/rotationHV.png</file>
+        <file alias="rotationN.png">assets/rotationN.png</file>
+        <file alias="rotationV.png">assets/rotationV.png</file>
     </qresource>
 </RCC>

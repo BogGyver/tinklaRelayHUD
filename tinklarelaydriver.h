@@ -154,6 +154,7 @@ public:
     volatile uint8_t rel_acc_speed = 0;
     volatile uint8_t rel_speed_limit = 0;
     bool tinklaRelayInitialized = false;
+    volatile uint8_t rel_battery_lvl = 0;
 };
 
 #endif // TINKLARELAYDRIVER_H
