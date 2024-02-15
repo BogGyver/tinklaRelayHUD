@@ -28,6 +28,9 @@
      <height>91</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="styleSheet">
     <string notr="true">border: none;
 background: none;</string>
@@ -54,6 +57,9 @@ background: none;</string>
      <width>111</width>
      <height>91</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="styleSheet">
     <string notr="true">border: none;
@@ -104,6 +110,9 @@ background: none;</string>
       <height>101</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>US</string>
     </property>
@@ -127,6 +136,9 @@ background: none;</string>
       <height>101</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>CA</string>
     </property>
@@ -149,6 +161,9 @@ background: none;</string>
       <width>121</width>
       <height>101</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string>ROW</string>
@@ -193,6 +208,9 @@ background: none;</string>
       <height>51</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -215,6 +233,9 @@ background: none;</string>
       <width>81</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string/>
@@ -239,6 +260,9 @@ background: none;</string>
       <height>51</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -261,6 +285,9 @@ background: none;</string>
       <width>81</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string/>
